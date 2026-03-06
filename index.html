@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Operators — CEO Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --surface3: #222222;
+    --border: #2a2a2a;
+    --border2: #333333;
+    --text: #e8e8e8;
+    --text2: #888888;
+    --text3: #555555;
+    --green: #22c55e;
+    --green-bg: rgba(34,197,94,0.08);
+    --yellow: #eab308;
+    --yellow-bg: rgba(234,179,8,0.08);
+    --red: #ef4444;
+    --red-bg: rgba(239,68,68,0.08);
+    --blue: #3b82f6;
+    --blue-bg: rgba(59,130,246,0.08);
+    --accent: #f97316;
+    --accent2: #fb923c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    color: #000;
+    letter-spacing: -1px;
+  }
+
+  .logo-text {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text2);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .month-selector {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .month-selector option { background: var(--surface2); }
+
+  .save-btn {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .save-btn:hover { opacity: 0.85; }
+
+  /* MAIN */
+  .main { padding: 32px; max-width: 1600px; margin: 0 auto; }
+
+  /* SCORECARD ROW */
+  .scorecard-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .scorecard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scorecard::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .scorecard.green::before { background: var(--green); }
+  .scorecard.yellow::before { background: var(--yellow); }
+  .scorecard.red::before { background: var(--red); }
+  .scorecard.blue::before { background: var(--blue); }
+
+  .scorecard-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+
+  .scorecard-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .scorecard-sub {
+    font-size: 12px;
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* CHART ROW */
+  .chart-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 20px;
+  }
+
+  /* BAR CHART */
+  .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
+  .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .bar-wrap { width: 100%; display: flex; gap: 3px; align-items: flex-end; height: 100px; }
+  .bar {
+    flex: 1;
+    border-radius: 3px 3px 0 0;
+    transition: opacity 0.2s;
+    cursor: pointer;
+    min-height: 4px;
+  }
+  .bar:hover { opacity: 0.75; }
+  .bar.actual { background: var(--accent); }
+  .bar.target { background: var(--surface3); }
+  .bar-label { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; }
+
+  /* DONUT */
+  .donut-wrap { display: flex; align-items: center; justify-content: center; gap: 24px; }
+  .donut-legend { display: flex; flex-direction: column; gap: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* SECTION TABLES */
+  .section-wrap { margin-bottom: 24px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .section-icon { font-size: 16px; }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text2);
+  }
+
+  .section-toggle {
+    margin-left: auto;
+    color: var(--text3);
+    font-size: 12px;
+    transition: transform 0.2s;
+  }
+  .section-toggle.open { transform: rotate(180deg); }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    margin-left: 8px;
+  }
+
+  .metrics-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .table-header {
+    display: grid;
+    grid-template-columns: 200px repeat(5, 80px) 60px 100px 100px 90px 120px 60px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+  }
+
+  .th {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 10px 6px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .metric-row {
+    display: grid;
+    grid-template-columns: 200px repeat(5, 80px) 60px 100px 100px 90px 120px 60px;
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    align-items: center;
+    transition: background 0.1s;
+  }
+  .metric-row:last-child { border-bottom: none; }
+  .metric-row:hover { background: var(--surface2); }
+
+  .metric-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    padding: 12px 6px;
+  }
+
+  .metric-cell {
+    padding: 8px 6px;
+  }
+
+  .cell-input {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    width: 100%;
+    padding: 4px 6px;
+    text-align: right;
+    outline: none;
+    transition: all 0.15s;
+  }
+  .cell-input:focus {
+    background: var(--surface3);
+    border-color: var(--border2);
+  }
+  .cell-input::placeholder { color: var(--text3); }
+
+  .monthly-actual {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    padding: 12px 6px;
+    text-align: right;
+  }
+
+  .target-cell {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text2);
+    padding: 12px 6px;
+    text-align: right;
+  }
+
+  /* STATUS BADGE */
+  .status-select {
+    border: none;
+    border-radius: 20px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    cursor: pointer;
+    outline: none;
+    width: 100%;
+    text-align: center;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .status-green { background: var(--green-bg); color: var(--green); }
+  .status-yellow { background: var(--yellow-bg); color: var(--yellow); }
+  .status-red { background: var(--red-bg); color: var(--red); }
+  .status-blue { background: var(--blue-bg); color: var(--blue); }
+
+  .owner-cell {
+    font-size: 12px;
+    color: var(--text2);
+    padding: 12px 6px;
+    font-family: 'DM Mono', monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .notes-input {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    width: 100%;
+    padding: 4px 6px;
+    outline: none;
+    transition: all 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .notes-input:focus {
+    background: var(--surface3);
+    border-color: var(--border2);
+    white-space: normal;
+    overflow: visible;
+  }
+  .notes-input::placeholder { color: var(--text3); }
+
+  /* LEGEND */
+  .chart-legend { display: flex; gap: 16px; margin-top: 12px; }
+  .chart-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; }
+  .chart-legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+  /* ATTENTION BOX */
+  .attention-strip {
+    background: rgba(239,68,68,0.05);
+    border: 1px solid rgba(239,68,68,0.15);
+    border-radius: 10px;
+    padding: 16px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .attention-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--red);
+    white-space: nowrap;
+    padding-top: 1px;
+  }
+  .attention-items { display: flex; flex-wrap: wrap; gap: 8px; }
+  .attention-tag {
+    background: rgba(239,68,68,0.1);
+    color: var(--red);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 32px;
+    font-size: 11px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+    border-top: 1px solid var(--border);
+    margin-top: 16px;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    background: var(--green);
+    color: #000;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 12px 20px;
+    border-radius: 8px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* RESPONSIVE SCROLL */
+  .table-scroll { overflow-x: auto; }
+
+  canvas { display: block; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-mark">MO</div>
+    <div class="logo-text">Modern Operators — CEO Dashboard</div>
+  </div>
+  <div class="header-right">
+    <select class="month-selector" id="monthSelect" onchange="updateMonth()">
+      <option>January 2026</option>
+      <option>February 2026</option>
+      <option selected>March 2026</option>
+      <option>April 2026</option>
+      <option>May 2026</option>
+      <option>June 2026</option>
+    </select>
+    <button class="save-btn" onclick="saveData()">Save</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- SCORECARDS -->
+  <div class="scorecard-row" id="scorecards">
+    <div class="scorecard green">
+      <div class="scorecard-label">Monthly Revenue</div>
+      <div class="scorecard-value" id="sc-revenue">$0</div>
+      <div class="scorecard-sub" id="sc-revenue-sub">target: $0</div>
+    </div>
+    <div class="scorecard blue">
+      <div class="scorecard-label">Discovery Calls</div>
+      <div class="scorecard-value" id="sc-calls">0</div>
+      <div class="scorecard-sub" id="sc-calls-sub">target: 0</div>
+    </div>
+    <div class="scorecard yellow">
+      <div class="scorecard-label">Deals Closed</div>
+      <div class="scorecard-value" id="sc-deals">0</div>
+      <div class="scorecard-sub" id="sc-deals-sub">target: 0</div>
+    </div>
+    <div class="scorecard red">
+      <div class="scorecard-label">Active Clients</div>
+      <div class="scorecard-value" id="sc-clients">0</div>
+      <div class="scorecard-sub" id="sc-clients-sub">target: 0</div>
+    </div>
+  </div>
+
+  <!-- ATTENTION STRIP -->
+  <div class="attention-strip" id="attentionStrip" style="display:none">
+    <div class="attention-label">🔴 Needs Attention</div>
+    <div class="attention-items" id="attentionItems"></div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="chart-row">
+    <div class="chart-card">
+      <div class="card-title">Weekly Revenue — Actual vs Target</div>
+      <canvas id="revenueChart" height="130"></canvas>
+      <div class="chart-legend">
+        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--accent)"></div>Actual</div>
+        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--surface3)"></div>Target</div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="card-title">Status Breakdown</div>
+      <div class="donut-wrap">
+        <canvas id="donutChart" width="120" height="120"></canvas>
+        <div class="donut-legend" id="donutLegend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div><span>On Track</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div><span>Watch</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div><span>Off Track</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div><span>No Data</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- METRIC SECTIONS -->
+  <div id="sectionsWrap"></div>
+
+</div>
+
+<div class="footer">Modern Operators © 2026 — Updated weekly every Monday</div>
+<div class="toast" id="toast">Saved ✓</div>
+
+<script>
+const SECTIONS = [
+  {
+    id: 'evergreen', icon: '💰', title: 'Evergreen Metrics',
+    metrics: [
+      { name: 'Revenue', type: 'Total', target: 0, owner: 'Mark', fmt: '$' },
+      { name: 'Cash Collected', type: 'Total', target: 0, owner: 'Mark', fmt: '$' },
+      { name: 'Revenue Per Client', type: 'Avg', target: 0, owner: 'Mark', fmt: '$' },
+      { name: 'Gross Margin %', type: 'Avg', target: 0, owner: 'Mark', fmt: '%' },
+    ]
+  },
+  {
+    id: 'northstar', icon: '⭐', title: 'North Star Metrics',
+    metrics: [
+      { name: 'New Leads', type: 'Total', target: 0, owner: 'Mark', fmt: '' },
+      { name: 'Discovery Calls Booked', type: 'Total', target: 0, owner: 'Damon', fmt: '' },
+      { name: 'Discovery Calls Completed', type: 'Total', target: 0, owner: 'Damon', fmt: '' },
+      { name: 'Proposals Sent', type: 'Total', target: 0, owner: 'Damon', fmt: '' },
+      { name: 'Deals Closed', type: 'Total', target: 0, owner: 'Damon', fmt: '' },
+    ]
+  },
+  {
+    id: 'marketing', icon: '📣', title: 'Marketing',
+    metrics: [
+      { name: 'Total Ad Spend', type: 'Total', target: 0, owner: 'Mark', fmt: '$' },
+      { name: 'Cost Per Lead', type: 'Avg', target: 0, owner: 'Mark', fmt: '$' },
+      { name: 'Cost Per Call Booked', type: 'Avg', target: 0, owner: 'Mark', fmt: '$' },
+      { name: 'Reddit Followers', type: 'Total', target: 0, owner: 'Mark', fmt: '' },
+      { name: 'Email List Size', type: 'Total', target: 0, owner: 'Mark', fmt: '' },
+    ]
+  },
+  {
+    id: 'sales', icon: '🤝', title: 'Sales',
+    metrics: [
+      { name: 'Close Rate', type: 'Avg', target: 0, owner: 'Damon', fmt: '%' },
+      { name: 'Avg Deal Size', type: 'Avg', target: 0, owner: 'Damon', fmt: '$' },
+      { name: 'Sales Cycle (days)', type: 'Avg', target: 0, owner: 'Damon', fmt: '' },
+    ]
+  },
+  {
+    id: 'clients', icon: '🏆', title: 'Client Success',
+    metrics: [
+      { name: 'Active Clients', type: 'Total', target: 0, owner: 'Mark', fmt: '' },
+      { name: 'Client NPS', type: 'Avg', target: 0, owner: 'Mark', fmt: '' },
+      { name: 'Churn (cancellations)', type: 'Total', target: 0, owner: 'Mark', fmt: '' },
+      { name: 'Deliverables On Time %', type: 'Avg', target: 0, owner: 'Mark', fmt: '%' },
+    ]
+  },
+  {
+    id: 'finance', icon: '💼', title: 'Finance',
+    metrics: [
+      { name: 'MRR', type: 'Total', target: 0, owner: 'Mark', fmt: '$' },
+      { name: 'Outstanding Invoices', type: 'Total', target: 0, owner: 'Mark', fmt: '$' },
+      { name: 'Operating Expenses', type: 'Total', target: 0, owner: 'Mark', fmt: '$' },
+      { name: 'Net Profit', type: 'Total', target: 0, owner: 'Mark', fmt: '$' },
+    ]
+  }
+];
+
+// DATA STORE
+let data = {};
+
+function storageKey() {
+  return 'mo_dashboard_' + document.getElementById('monthSelect').value.replace(' ','_');
+}
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem(storageKey());
+    if (saved) data = JSON.parse(saved);
+    else data = {};
+  } catch(e) { data = {}; }
+}
+
+function saveData() {
+  try { localStorage.setItem(storageKey(), JSON.stringify(data)); } catch(e) {}
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function updateMonth() { loadData(); buildAll(); }
+
+function getVal(key) { return data[key] !== undefined ? data[key] : ''; }
+function setVal(key, val) { data[key] = val; }
+
+function metricKey(sectionId, metricName, field) {
+  return sectionId + '_' + metricName.replace(/\s+/g,'_') + '_' + field;
+}
+
+// FORMAT
+function fmt(val, format) {
+  if (val === '' || val === null || val === undefined || isNaN(parseFloat(val))) return '—';
+  const n = parseFloat(val);
+  if (format === '$') return '$' + n.toLocaleString('en-US', {maximumFractionDigits: 0});
+  if (format === '%') return n.toFixed(1) + '%';
+  return n.toLocaleString('en-US', {maximumFractionDigits: 1});
+}
+
+function calcActual(sectionId, metric) {
+  const vals = [1,2,3,4,'R'].map(w => {
+    const k = metricKey(sectionId, metric.name, 'w'+w);
+    const v = parseFloat(getVal(k));
+    return isNaN(v) ? null : v;
+  }).filter(v => v !== null);
+  if (!vals.length) return '';
+  if (metric.type === 'Avg') return (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2);
+  return vals.reduce((a,b)=>a+b,0).toFixed(2);
+}
+
+// BUILD ALL
+function buildAll() {
+  buildSections();
+  updateScorecards();
+  updateAttention();
+  buildRevenueChart();
+  buildDonutChart();
+}
+
+function buildSections() {
+  const wrap = document.getElementById('sectionsWrap');
+  wrap.innerHTML = '';
+
+  SECTIONS.forEach(section => {
+    const div = document.createElement('div');
+    div.className = 'section-wrap';
+
+    // Header
+    const hdr = document.createElement('div');
+    hdr.className = 'section-header';
+    hdr.innerHTML = `
+      <span class="section-icon">${section.icon}</span>
+      <span class="section-title">${section.title}</span>
+      <div class="section-line"></div>
+      <span class="section-toggle open" id="toggle_${section.id}">▼</span>
+    `;
+    hdr.onclick = () => toggleSection(section.id);
+    div.appendChild(hdr);
+
+    // Table
+    const tableWrap = document.createElement('div');
+    tableWrap.className = 'table-scroll';
+    tableWrap.id = 'section_' + section.id;
+
+    const table = document.createElement('div');
+    table.className = 'metrics-table';
+
+    // Header row
+    table.innerHTML = `
+      <div class="table-header">
+        <div class="th">Metric</div>
+        <div class="th" style="text-align:right">Wk 1</div>
+        <div class="th" style="text-align:right">Wk 2</div>
+        <div class="th" style="text-align:right">Wk 3</div>
+        <div class="th" style="text-align:right">Wk 4</div>
+        <div class="th" style="text-align:right">Rem.</div>
+        <div class="th" style="text-align:center">Type</div>
+        <div class="th" style="text-align:right">Actual</div>
+        <div class="th" style="text-align:right">Target</div>
+        <div class="th" style="text-align:center">Status</div>
+        <div class="th">Owner</div>
+        <div class="th">Notes</div>
+      </div>
+    `;
+
+    section.metrics.forEach(metric => {
+      const row = document.createElement('div');
+      row.className = 'metric-row';
+
+      const actual = calcActual(section.id, metric);
+      const targetKey = metricKey(section.id, metric.name, 'target');
+      const statusKey = metricKey(section.id, metric.name, 'status');
+      const notesKey = metricKey(section.id, metric.name, 'notes');
+      const savedTarget = getVal(targetKey) || metric.target || '';
+      const savedStatus = getVal(statusKey) || 'blue';
+      const savedNotes = getVal(notesKey) || '';
+
+      const weeks = [1,2,3,4,'R'];
+      let weekCells = weeks.map(w => {
+        const key = metricKey(section.id, metric.name, 'w'+w);
+        const val = getVal(key);
+        return `<div class="metric-cell">
+          <input class="cell-input" type="number" placeholder="—" value="${val}"
+            data-key="${key}" oninput="onInput(this)" style="width:68px">
+        </div>`;
+      }).join('');
+
+      const statusClass = 'status-' + savedStatus;
+
+      row.innerHTML = `
+        <div class="metric-name">${metric.name}</div>
+        ${weekCells}
+        <div class="metric-cell" style="text-align:center;font-size:11px;color:var(--text3);font-family:'DM Mono',monospace">${metric.type}</div>
+        <div class="monthly-actual" id="actual_${section.id}_${metric.name.replace(/\s+/g,'_')}">${fmt(actual, metric.fmt)}</div>
+        <div class="metric-cell">
+          <input class="cell-input" type="number" placeholder="Target" value="${savedTarget}"
+            data-key="${targetKey}" data-section="${section.id}" data-metric="${metric.name}"
+            oninput="onTargetInput(this)" style="width:88px">
+        </div>
+        <div class="metric-cell">
+          <select class="status-select ${statusClass}" data-key="${statusKey}" onchange="onStatusChange(this)">
+            <option value="green" ${savedStatus==='green'?'selected':''}>🟢 Green</option>
+            <option value="yellow" ${savedStatus==='yellow'?'selected':''}>🟡 Yellow</option>
+            <option value="red" ${savedStatus==='red'?'selected':''}>🔴 Red</option>
+            <option value="blue" ${savedStatus==='blue'?'selected':''}>🔵 N/A</option>
+          </select>
+        </div>
+        <div class="owner-cell">${metric.owner}</div>
+        <div class="metric-cell">
+          <input class="notes-input" type="text" placeholder="Add note…" value="${savedNotes}"
+            data-key="${notesKey}" oninput="onNotesInput(this)">
+        </div>
+      `;
+
+      table.appendChild(row);
+    });
+
+    tableWrap.appendChild(table);
+    div.appendChild(tableWrap);
+    wrap.appendChild(div);
+  });
+}
+
+function toggleSection(id) {
+  const el = document.getElementById('section_' + id);
+  const toggle = document.getElementById('toggle_' + id);
+  if (el.style.display === 'none') {
+    el.style.display = 'block';
+    toggle.classList.add('open');
+  } else {
+    el.style.display = 'none';
+    toggle.classList.remove('open');
+  }
+}
+
+function onInput(el) {
+  setVal(el.dataset.key, el.value);
+  // Recalc actual for this row
+  const parts = el.dataset.key.split('_');
+  // Find section and metric
+  SECTIONS.forEach(section => {
+    section.metrics.forEach(metric => {
+      const testKey = metricKey(section.id, metric.name, 'w1');
+      if (el.dataset.key.startsWith(section.id + '_' + metric.name.replace(/\s+/g,'_') + '_')) {
+        const actual = calcActual(section.id, metric);
+        const el2 = document.getElementById('actual_' + section.id + '_' + metric.name.replace(/\s+/g,'_'));
+        if (el2) el2.textContent = fmt(actual, metric.fmt);
+      }
+    });
+  });
+  updateScorecards();
+  buildRevenueChart();
+}
+
+function onTargetInput(el) {
+  setVal(el.dataset.key, el.value);
+  updateScorecards();
+}
+
+function onStatusChange(el) {
+  setVal(el.dataset.key, el.value);
+  el.className = 'status-select status-' + el.value;
+  updateAttention();
+  buildDonutChart();
+}
+
+function onNotesInput(el) { setVal(el.dataset.key, el.value); }
+
+// SCORECARDS
+function updateScorecards() {
+  // Revenue
+  const revSection = SECTIONS[0];
+  const rev = calcActual('evergreen', revSection.metrics[0]);
+  const revTarget = getVal(metricKey('evergreen','Revenue','target'));
+  document.getElementById('sc-revenue').textContent = fmt(rev, '$');
+  document.getElementById('sc-revenue-sub').textContent = 'target: ' + fmt(revTarget, '$');
+  const sc0 = document.querySelectorAll('.scorecard')[0];
+  sc0.className = 'scorecard ' + (rev && revTarget ? (parseFloat(rev) >= parseFloat(revTarget) ? 'green' : 'red') : 'blue');
+
+  // Discovery calls
+  const calls = calcActual('northstar', SECTIONS[1].metrics[2]);
+  const callsTarget = getVal(metricKey('northstar','Discovery Calls Completed','target'));
+  document.getElementById('sc-calls').textContent = fmt(calls, '');
+  document.getElementById('sc-calls-sub').textContent = 'target: ' + fmt(callsTarget, '');
+  const sc1 = document.querySelectorAll('.scorecard')[1];
+  sc1.className = 'scorecard ' + (calls && callsTarget ? (parseFloat(calls) >= parseFloat(callsTarget) ? 'green' : 'red') : 'blue');
+
+  // Deals closed
+  const deals = calcActual('northstar', SECTIONS[1].metrics[4]);
+  const dealsTarget = getVal(metricKey('northstar','Deals Closed','target'));
+  document.getElementById('sc-deals').textContent = fmt(deals, '');
+  document.getElementById('sc-deals-sub').textContent = 'target: ' + fmt(dealsTarget, '');
+  const sc2 = document.querySelectorAll('.scorecard')[2];
+  sc2.className = 'scorecard ' + (deals && dealsTarget ? (parseFloat(deals) >= parseFloat(dealsTarget) ? 'green' : 'red') : 'yellow');
+
+  // Active clients
+  const clients = calcActual('clients', SECTIONS[4].metrics[0]);
+  const clientsTarget = getVal(metricKey('clients','Active Clients','target'));
+  document.getElementById('sc-clients').textContent = fmt(clients, '');
+  document.getElementById('sc-clients-sub').textContent = 'target: ' + fmt(clientsTarget, '');
+  const sc3 = document.querySelectorAll('.scorecard')[3];
+  sc3.className = 'scorecard ' + (clients && clientsTarget ? (parseFloat(clients) >= parseFloat(clientsTarget) ? 'green' : 'red') : 'blue');
+}
+
+// ATTENTION STRIP
+function updateAttention() {
+  const redItems = [];
+  SECTIONS.forEach(section => {
+    section.metrics.forEach(metric => {
+      const status = getVal(metricKey(section.id, metric.name, 'status'));
+      if (status === 'red') redItems.push(metric.name);
+    });
+  });
+
+  const strip = document.getElementById('attentionStrip');
+  const items = document.getElementById('attentionItems');
+
+  if (redItems.length) {
+    strip.style.display = 'flex';
+    items.innerHTML = redItems.map(n => `<div class="attention-tag">${n}</div>`).join('');
+  } else {
+    strip.style.display = 'none';
+  }
+}
+
+// REVENUE CHART (canvas)
+function buildRevenueChart() {
+  const canvas = document.getElementById('revenueChart');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.clientWidth - 48;
+  canvas.width = W;
+  canvas.height = 130;
+  ctx.clearRect(0, 0, W, 130);
+
+  const weeks = [1,2,3,4,'R'];
+  const labels = ['Week 1','Week 2','Week 3','Week 4','Rem.'];
+  const actuals = weeks.map(w => {
+    const k = metricKey('evergreen','Revenue','w'+w);
+    const v = parseFloat(getVal(k));
+    return isNaN(v) ? 0 : v;
+  });
+  const target = parseFloat(getVal(metricKey('evergreen','Revenue','target'))) || 0;
+  const weeklyTarget = target / 5;
+
+  const max = Math.max(...actuals, weeklyTarget, 1);
+  const barW = Math.floor((W - 60) / (weeks.length * 2 + weeks.length - 1));
+  const gap = barW / 2;
+  const chartH = 100;
+  const offsetY = 10;
+
+  weeks.forEach((w, i) => {
+    const x = 40 + i * (barW * 2 + gap);
+
+    // Target bar
+    const th = (weeklyTarget / max) * chartH;
+    ctx.fillStyle = '#2a2a2a';
+    ctx.beginPath();
+    ctx.roundRect(x, offsetY + chartH - th, barW, th, [3,3,0,0]);
+    ctx.fill();
+
+    // Actual bar
+    const ah = (actuals[i] / max) * chartH;
+    ctx.fillStyle = actuals[i] > 0 ? '#f97316' : '#222';
+    ctx.beginPath();
+    ctx.roundRect(x + barW + 2, offsetY + chartH - ah, barW, ah || 4, [3,3,0,0]);
+    ctx.fill();
+
+    // Label
+    ctx.fillStyle = '#555';
+    ctx.font = '10px DM Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(labels[i], x + barW, offsetY + chartH + 14);
+  });
+
+  // Y axis line
+  ctx.strokeStyle = '#2a2a2a';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(36, offsetY);
+  ctx.lineTo(36, offsetY + chartH);
+  ctx.stroke();
+}
+
+// DONUT CHART (canvas)
+function buildDonutChart() {
+  const canvas = document.getElementById('donutChart');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, 120, 120);
+
+  const counts = { green: 0, yellow: 0, red: 0, blue: 0 };
+  SECTIONS.forEach(section => {
+    section.metrics.forEach(metric => {
+      const s = getVal(metricKey(section.id, metric.name, 'status')) || 'blue';
+      counts[s] = (counts[s] || 0) + 1;
+    });
+  });
+
+  const total = Object.values(counts).reduce((a,b)=>a+b,0);
+  const colors = { green: '#22c55e', yellow: '#eab308', red: '#ef4444', blue: '#3b82f6' };
+  const order = ['green','yellow','red','blue'];
+
+  let startAngle = -Math.PI / 2;
+  const cx = 60, cy = 60, r = 48, inner = 30;
+
+  order.forEach(key => {
+    const slice = (counts[key] / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, startAngle, startAngle + slice);
+    ctx.closePath();
+    ctx.fillStyle = colors[key];
+    ctx.globalAlpha = counts[key] > 0 ? 1 : 0.15;
+    ctx.fill();
+    startAngle += slice;
+  });
+
+  // Inner hole
+  ctx.globalAlpha = 1;
+  ctx.beginPath();
+  ctx.arc(cx, cy, inner, 0, Math.PI * 2);
+  ctx.fillStyle = '#111';
+  ctx.fill();
+
+  // Center count
+  ctx.fillStyle = '#e8e8e8';
+  ctx.font = 'bold 16px Syne, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(total, cx, cy);
+
+  // Update legend counts
+  const legendEl = document.getElementById('donutLegend');
+  const labels = { green: 'On Track', yellow: 'Watch', red: 'Off Track', blue: 'No Data' };
+  legendEl.innerHTML = order.map(k => `
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${colors[k]}"></div>
+      <span>${labels[k]} <span style="color:var(--text3);font-family:'DM Mono',monospace">(${counts[k]})</span></span>
+    </div>
+  `).join('');
+}
+
+// INIT
+loadData();
+buildAll();
+
+window.addEventListener('resize', () => {
+  buildRevenueChart();
+});
+</script>
+</body>
+</html>
